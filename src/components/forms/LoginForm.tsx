@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Checkbox } from '../ui/checkbox';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const loginSchema = z.object({
     email: z.string({ required_error: 'Email is required' })
@@ -36,8 +37,11 @@ const LoginForm: React.FC = () => {
         },
     });
 
+    const router = useRouter();
+
     const onSubmit = async (data: LoginFormData) => {
         console.log(data);
+        router.push('/dashboard');
     };
 
     return (
