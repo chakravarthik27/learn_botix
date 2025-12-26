@@ -61,15 +61,12 @@ const LoginForm: React.FC = () => {
             }
 
             if (authData?.session) {
-                // Store session in localStorage
-                localStorage.setItem('supabase_session', JSON.stringify(authData.session));
-                
                 toast({
                     title: "Login Successful",
                     description: "Welcome back!",
                 });
                 
-                // Redirect to dashboard
+                // Redirect to home page
                 router.push('/');
             }
         } catch {

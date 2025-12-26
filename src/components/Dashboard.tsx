@@ -26,9 +26,6 @@ const Dashboard: React.FC = () => {
         return;
       }
 
-      // Clear session from localStorage
-      localStorage.removeItem('supabase_session');
-      
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out.",

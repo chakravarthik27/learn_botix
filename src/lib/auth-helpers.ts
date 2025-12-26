@@ -10,10 +10,8 @@ export async function getUser() {
   return { user, error };
 }
 
-export function isAuthenticated() {
-  if (typeof window === 'undefined') return false;
-  
-  const session = localStorage.getItem('supabase_session');
+export async function isAuthenticated() {
+  const { session } = await getSession();
   return !!session;
 }
 
