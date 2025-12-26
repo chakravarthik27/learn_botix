@@ -21,14 +21,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             email: credentials.email
                         }
                     })
-                    let passwordMatch = user.password === credentials.password
+                    const passwordMatch = user.password === credentials.password
                     if (user && passwordMatch) {
                         return user
                     }
                     return null
                 }
 
-               } catch (error) {
+               } catch {
                    return null
                }
             }
