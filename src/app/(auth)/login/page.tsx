@@ -2,7 +2,6 @@ import React from 'react';
 import LoginForm from '@/components/forms/LoginForm';
 import SocialLogin from '@/components/forms/SocialLoginForm';
 import { Separator } from '@/components/ui/separator';
-import { Avatar } from '@radix-ui/react-avatar';
 
 const LoginPage: React.FC = () => {
     return (

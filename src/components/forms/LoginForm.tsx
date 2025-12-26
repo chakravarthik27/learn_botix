@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,7 +17,9 @@ import {
 } from '@/components/ui/form';
 import { Checkbox } from '../ui/checkbox';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
     email: z.string({ required_error: 'Email is required' })
@@ -29,6 +31,8 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 const LoginForm: React.FC = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
     const form = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -40,8 +44,40 @@ const LoginForm: React.FC = () => {
     const router = useRouter();
 
     const onSubmit = async (data: LoginFormData) => {
-        console.log(data);
-        router.push('/dashboard');
+        setIsLoading(true);
+        try {
+            const { data: authData, error } = await supabase.auth.signInWithPassword({
+                email: data.email,
+                password: data.password,
+            });
+
+            if (error) {
+                toast({
+                    variant: "destructive",
+                    title: "Login Failed",
+                    description: error.message || "Invalid email or password. Please try again.",
+                });
+                return;
+            }
+
+            if (authData?.session) {
+                toast({
+                    title: "Login Successful",
+                    description: "Welcome back!",
+                });
+                
+                // Redirect to home page
+                router.push('/');
+            }
+        } catch {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An unexpected error occurred. Please try again.",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -60,7 +96,7 @@ const LoginForm: React.FC = () => {
                                 <FormMessage>{form.formState.errors.email.message}</FormMessage>
                             ) : (
                                 <FormDescription>
-                                    We'll never share your email with anyone else.
+                                    We&apos;ll never share your email with anyone else.
                                 </FormDescription>
                             )}
                         </FormItem>
@@ -104,8 +140,8 @@ const LoginForm: React.FC = () => {
                     </label>
                 </div>
                 </div>
-                <Button type="submit" variant="default" className="w-full">
-                    Login
+                <Button type="submit" variant="default" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
             </form>
         </Form>

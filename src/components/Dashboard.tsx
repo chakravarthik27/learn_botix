@@ -1,10 +1,47 @@
+'use client';
+
 import React from 'react';
 import { Sidebar, SidebarProvider, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard: React.FC = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Logout Failed",
+          description: error.message || "An error occurred during logout.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      
+      // Redirect to login page
+      router.push('/login');
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred during logout.",
+      });
+    }
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -31,7 +68,7 @@ const Dashboard: React.FC = () => {
           </SidebarContent>
           <SidebarFooter>
             <button className="text-sm text-gray-600">Settings</button>
-            <button className="text-sm text-gray-600">Logout</button>
+            <button className="text-sm text-gray-600" onClick={handleLogout}>Logout</button>
           </SidebarFooter>
         </Sidebar>
         <div className="flex-1 p-4">
