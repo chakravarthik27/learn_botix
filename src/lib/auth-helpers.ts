@@ -17,5 +17,8 @@ export async function isAuthenticated() {
 
 export async function requireAuth() {
   const { session } = await getSession();
-  return !!session;
+  if (!session) {
+    throw new Error('Authentication required');
+  }
+  return session;
 }
